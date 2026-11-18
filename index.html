@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
@@ -120,6 +120,29 @@ mark{background:var(--amb);color:#111;border-radius:3px;padding:0 3px}
 .im button{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);color:#fff;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
 #lb{background:rgba(0,0,0,.93);z-index:30;cursor:zoom-out}#lb img{max-width:96vw;max-height:94vh;border-radius:8px}
 .modal.drag{border-color:var(--grn)}
+
+.tb{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:7px;background:#050810;border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0}
+.tb button{min-width:28px;height:28px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--tx);font:inherit;cursor:pointer;padding:0 7px}
+.tb button:hover{border-color:var(--cyan);box-shadow:0 0 10px color-mix(in srgb,var(--cyan) 40%,transparent)}
+.tb .w{width:26px;min-width:26px;padding:0;border:2px solid transparent}
+.tb .sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+.tb+textarea{border-radius:0 0 8px 8px}
+.k-r,.k-a,.k-g,.k-c,.k-p,.k-k,.k-b{font-weight:700;border-radius:3px;padding:0 3px}
+.k-r{color:#ff6b86;background:color-mix(in srgb,var(--red) 16%,transparent);text-shadow:0 0 8px color-mix(in srgb,var(--red) 70%,transparent)}
+.k-a{color:#ffc65c;background:color-mix(in srgb,var(--amb) 16%,transparent);text-shadow:0 0 8px color-mix(in srgb,var(--amb) 70%,transparent)}
+.k-g{color:#5bf0b0;background:color-mix(in srgb,var(--grn) 16%,transparent);text-shadow:0 0 8px color-mix(in srgb,var(--grn) 70%,transparent)}
+.k-c{color:var(--cyan);background:color-mix(in srgb,var(--cyan) 14%,transparent);text-shadow:0 0 8px color-mix(in srgb,var(--cyan) 70%,transparent)}
+.k-p{color:#c995ff;background:color-mix(in srgb,var(--pur) 18%,transparent);text-shadow:0 0 8px color-mix(in srgb,var(--pur) 70%,transparent)}
+.k-k{color:#ff7be5;background:color-mix(in srgb,var(--pink) 16%,transparent);text-shadow:0 0 8px color-mix(in srgb,var(--pink) 70%,transparent)}
+.k-b{color:#7fa8ff;background:color-mix(in srgb,var(--blue) 18%,transparent);text-shadow:0 0 8px color-mix(in srgb,var(--blue) 70%,transparent)}
+.l b{color:#fff}
+.card:hover{box-shadow:0 0 28px color-mix(in srgb,var(--c,var(--cyan)) 45%,transparent)}
+main::before{content:"";position:fixed;left:250px;right:0;top:-4px;height:3px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.35;animation:scan 7s linear infinite;pointer-events:none;z-index:2}
+@keyframes scan{to{transform:translateY(100vh)}}
+@media(max-width:760px){main::before{left:0}}
+@media(prefers-reduced-motion:reduce){*::before,*::after{animation:none!important}}
+.tb .tbl{width:100%;font-size:11px;color:var(--cyan)}
+.tb .w{color:#06101f;font-weight:800}
 </style>
 </head>
 <body>
@@ -135,7 +158,7 @@ mark{background:var(--amb);color:#111;border-radius:3px;padding:0 3px}
   </div>
 </aside>
 <main>
-  <div class="term"><div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>&nbsp;root@kali: ~</div><pre id="tty"></pre></div>
+  <div class="term"><div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>&nbsp;root@kali: ~<span id="clk" style="margin-left:auto;color:var(--cyan)"></span></div><pre id="tty"></pre></div>
   <div id="view"></div>
 </main>
 
@@ -279,10 +302,11 @@ function renderItems(){
 }
 const COLORS={blue:'#367bf0',cyan:'#27e1ff',grn:'#3ddc97',amb:'#ffb02e',red:'#ff4d6d',pur:'#b36bff',pink:'#ff4fd8'};
 const CN={blue:"Oddiy",cyan:"Ma'lumot",grn:"Tayyor",amb:"Diqqat",red:"Juda muhim",pur:"G'oya",pink:"Maxsus"};
+const TB=`<div class="tb"><span class="tbl">1) So'zni belgilang (yoki ustiga kursor qo'ying) &nbsp;2) rangni bosing · Ctrl+1…7</span>${Object.entries({r:'#ff4d6d',a:'#ffb02e',g:'#3ddc97',c:'#27e1ff',p:'#b36bff',k:'#ff4fd8',b:'#367bf0'}).map(([k,v])=>`<button type="button" class="w" data-w="${k}" style="background:${v}" title="Tanlangan so'zni bo'yash">A</button>`).join('')}<button type="button" data-w="x" title="Rangni olib tashlash">✕</button><button type="button" data-w="B" title="Qalin"><b>B</b></button><button type="button" data-w="M" title="Marker">==</button><span class="sep"></span>${['!','?','+','#','$','>>'].map(p=>`<button type="button" data-l="${p}" title="Butun satrni bo'yash">${p}</button>`).join('')}</div>`;
 function fmt(b){return b.split('\n').map(l=>{
   const t=l.trimStart();let c='';
   if(t.startsWith('! '))c='r';else if(t.startsWith('? '))c='a';else if(t.startsWith('+ '))c='g';else if(t.startsWith('# '))c='h';else if(t.startsWith('$ '))c='s';else if(t.startsWith('>> '))c='p';
-  return `<div class="l ${c}">${esc(l).replace(/==(.+?)==/g,'<mark>$1</mark>')||'&nbsp;'}</div>`}).join('')}
+  return `<div class="l ${c}">${esc(l).replace(/\[\[([ragcpkb]):(.+?)\]\]/g,'<span class="k-$1">$2</span>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/==(.+?)==/g,'<mark>$1</mark>')||'&nbsp;'}</div>`}).join('')}
 function card(x){
   const st=x.type==='lab'?`<span class="st ${ST[x.status||'j'][1]}">${ST[x.status||'j'][0]}</span>`:'';
   const lg=x.type==='code'&&x.lang?`<span class="tag" style="color:var(--grn);border-color:var(--grn)">${esc(x.lang)}</span>`:'';
@@ -309,9 +333,9 @@ function edit(id){
   <div class="two"><div><label>Teglar (vergul bilan)</label><input class="in" id="f-tags" value="${esc((x.tags||[]).join(', '))}" placeholder="nmap, web, recon"></div>
   ${isCode?`<div><label>Til</label><input class="in" id="f-lang" value="${esc(x.lang||'bash')}" placeholder="bash, python..."></div>`:''}
   ${isLab?`<div><label>Holat</label><select class="in" id="f-st">${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${x.status===k?'selected':''}>${v[0]}</option>`).join('')}</select></div>`:''}</div>
-  <div><label>Rang belgisi</label><div class="sw" id="sw"></div></div>
-  <div><label>${isCode?'Kod':isLab?'Jarayon: maqsad, buyruqlar, natija, xulosa':'Matn'}</label><textarea class="in" id="f-body" spellcheck="false">${esc(x.body)}</textarea><div class="fmt" id="f-view" hidden></div>
-  ${isCode?'':`<div class="hint"><span class="l r">! juda muhim</span><span class="l a">? diqqat</span><span class="l g">+ natija</span><span class="l h"># sarlavha</span><span class="l s">$ buyruq</span><span class="l p">&gt;&gt; g'oya</span><mark>==belgilash==</mark></div>`}</div>
+  <div><label>Yozuv kartasining rangi (butun yozuv uchun)</label><div class="sw" id="sw"></div></div>
+  <div><label>${isCode?'Kod':isLab?'Jarayon: maqsad, buyruqlar, natija, xulosa':'Matn'}</label>${isCode?'':TB}<textarea class="in" id="f-body" spellcheck="false">${esc(x.body)}</textarea><div class="fmt" id="f-view" hidden></div>
+  ${isCode?'':`<div class="hint"><span class="l r">! juda muhim</span><span class="l a">? diqqat</span><span class="l g">+ natija</span><span class="l h"># sarlavha</span><span class="l s">$ buyruq</span><span class="l p">&gt;&gt; g'oya</span><span class="l">so'zni belgilab, rang tugmasini bosing</span><mark>==belgilash==</mark></div>`}${isCode?'':`<label style="margin-top:10px">Jonli ko'rinish (natija shunday chiqadi)</label><div class="fmt" id="f-live" style="min-height:60px"></div>`}</div>
   <div><label>Rasmlar (tanlang, sudrab tashlang yoki Ctrl+V bilan skrinshot qo'ying)</label><div class="imgs" id="im"></div><button class="btn" id="b-img" type="button">+ Rasm qo'shish</button><input type="file" id="f-img" accept="image/*" multiple hidden></div>
   <div class="act">${id?'<button class="btn del" id="b-del">O\'chirish</button>':''}<button class="btn" id="b-v">👁 Ko\'rinish</button>${x.body?'<button class="btn" id="b-copy">Nusxalash</button>':''}<button class="btn" id="b-x">Bekor qilish</button><button class="btn pri" id="b-ok">Saqlash</button></div>`;
   const sw=$('#sw'),im=$('#im');
@@ -327,10 +351,44 @@ function edit(id){
   m.ondrop=e=>{e.preventDefault();m.classList.remove('drag');addF(e.dataTransfer.files)};
   $('#b-img').onclick=()=>$('#f-img').click();
   $('#f-img').onchange=e=>{addF(e.target.files);e.target.value=''};
+  const ta=$('#f-body'),lv=$('#f-live'),tb=m.querySelector('.tb');
+  function live(){if(lv)lv.innerHTML=fmt(ta.value)}
+  ta.oninput=live;live();
+  function tool(d){
+    if(ta.hidden)return;
+    const v=ta.value;let s=ta.selectionStart,en=ta.selectionEnd;
+    if(d.l){
+      const ls=v.lastIndexOf('\n',s-1)+1;let le=v.indexOf('\n',en);if(le<0)le=v.length;
+      const blk=v.slice(ls,le).split('\n').map(l=>d.l+' '+l.replace(/^(!|\?|\+|#|\$|>>) /,'')).join('\n');
+      ta.setRangeText(blk,ls,le,'end');
+    }else{
+      if(s===en){
+        let a=s,z=s;
+        while(a>0&&/\S/.test(v[a-1]))a--;
+        while(z<v.length&&/\S/.test(v[z]))z++;
+        if(a===z){toast("Avval so'zni belgilang (sichqoncha bilan)");ta.focus();return}
+        s=a;en=z;
+      }
+      const w=d.w,sel=v.slice(s,en);
+      if(w==='x'){ta.setRangeText(sel.replace(/\[\[[ragcpkb]:(.+?)\]\]/g,'$1').replace(/==(.+?)==/g,'$1').replace(/\*\*(.+?)\*\*/g,'$1'),s,en,'select')}
+      else{
+        const pre=w==='B'?'**':w==='M'?'==':'[['+w+':',post=w==='B'?'**':w==='M'?'==':']]';
+        ta.setRangeText(pre+sel+post,s,en,'end');ta.setSelectionRange(s+pre.length,s+pre.length+sel.length);
+      }
+    }
+    ta.focus();live();
+  }
+  if(tb){tb.onmousedown=e=>e.preventDefault();tb.onclick=e=>{const b=e.target.closest('button');if(b)tool(b.dataset)}}
+  ta.addEventListener('keydown',e=>{
+    if(!(e.ctrlKey||e.metaKey))return;
+    const k='1234567'.indexOf(e.key);
+    if(k>=0){e.preventDefault();tool({w:'ragcpkb'[k]})}
+    else if(e.key==='b'||e.key==='B'){e.preventDefault();tool({w:'B'})}
+  });
   drawSw();drawIm();
   $('#ov').classList.add('on');
-  $('#b-v').onclick=()=>{view=!view;const ta=$('#f-body'),fv=$('#f-view');ta.hidden=view;fv.hidden=!view;if(view)fv.innerHTML=isCode?`<pre class="cd">${esc(ta.value)}</pre>`:fmt(ta.value);$('#b-v').textContent=view?'✎ Tahrirlash':'👁 Ko\'rinish'};
-  if(id&&x.body)$('#b-v').click();else $('#f-title').focus();
+  $('#b-v').onclick=()=>{view=!view;const fv=$('#f-view');ta.hidden=view;fv.hidden=!view;m.querySelectorAll('.tb,#f-live,.hint').forEach(n=>n.hidden=view);if(view)fv.innerHTML=isCode?`<pre class="cd">${esc(ta.value)}</pre>`:fmt(ta.value);$('#b-v').textContent=view?'✎ Tahrirlash':'👁 Ko\'rinish'};
+  $('#f-title').focus();
   $('#b-x').onclick=close;
   $('#b-copy')&&($('#b-copy').onclick=()=>copy($('#f-body').value));
   $('#b-ok').onclick=()=>{
@@ -375,11 +433,11 @@ $('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileR
 
 /* ---------- Terminal animatsiya ---------- */
 (function(){
-  const lines=[['pr','root@kali:~# ','whoami'],['','kali-lab operator',''],['pr','root@kali:~# ','cat /etc/motto'],['hl','Yozib bor. Sinab ko\'r. Saqla.','']];
+  const lines=[['ok','localStorage ulandi'],['ok','modullar: yozuvlar · kodlar · labs · lug\'at'],['ok','mavzu va rasmlar tayyor'],['pr','root@kali:~# ','whoami'],['','kali-lab operator',''],['pr','root@kali:~# ','cat /etc/motto'],['hl','Yozib bor. Sinab ko\'r. Saqla.','']];
   const el=$('#tty');let out='',li=0,ci=0;
   const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
   const html=(done)=>el.innerHTML=out+(done?'':'')+'<span class="cur"></span>';
-  function line(l){return l[0]==='pr'?`<span class="pr">${l[1]}</span>${l[2]}`:`<span class="${l[0]}">${l[1]}</span>`}
+  function line(l){if(l[0]==='ok')return '<span style="color:var(--grn)">[ OK ]</span> '+l[1];return l[0]==='pr'?`<span class="pr">${l[1]}</span>${l[2]}`:`<span class="${l[0]}">${l[1]}</span>`}
   if(reduce){el.innerHTML=lines.map(line).join('\n')+'\n<span class="pr">root@kali:~# </span><span class="cur"></span>';return}
   function step(){
     if(li>=lines.length){el.innerHTML=out+'<span class="pr">root@kali:~# </span><span class="cur"></span>';return}
@@ -412,6 +470,7 @@ function theme(k){const t=THEMES[k]||THEMES.kali,r=document.documentElement.styl
 $('#th').onclick=e=>{const b=e.target.closest('button');if(b)theme(b.dataset.n)};
 let tk='kali';try{tk=localStorage.getItem('kali_theme')||'kali'}catch(e){}theme(tk);
 
+setInterval(()=>{const c=$('#clk');if(c)c.textContent=new Date().toLocaleTimeString('uz-UZ',{hour12:false})},1000);
 render();
 </script>
 </body>
